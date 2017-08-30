@@ -1,109 +1,46 @@
 # gluaurl
 
-[![](https://travis-ci.org/cjoudrey/gluaurl.svg)](https://travis-ci.org/cjoudrey/gluaurl)
+[![](https://travis-ci.org/cjoudrey/gluahttp.svg)](https://travis-ci.org/cjoudrey/gluahttp)
 
-gluahttp provides an easy way to parse and build URLs from within [GopherLua](https://github.com/yuin/gopher-lua).
+gluaurl is a package of url in go for [GopherLua](https://github.com/yuin/gopher-lua).
 
 ## Installation
 
 ```
-go get github.com/cjoudrey/gluaurl
+go get github.com/Greyh4t/gluaurl
 ```
 
 ## Usage
 
 ```go
-import "github.com/yuin/gopher-lua"
-import "github.com/cjoudrey/gluaurl"
+package main
+
+import (
+	"github.com/Greyh4t/gluaurl"
+	"github.com/yuin/gopher-lua"
+)
 
 func main() {
-    L := lua.NewState()
-    defer L.Close()
+	L := lua.NewState()
+	defer L.Close()
 
-    L.PreloadModule("url", gluaurl.Loader)
+	L.PreloadModule("url", gluaurl.NewUrl().Loader)
 
-    if err := L.DoString(`
-
-        local url = require("url")
-
-        parsed_url = url.parse("http://example.com/")
-
-        print(parsed_url.host)
-
-    `); err != nil {
-        panic(err)
-    }
+	if err := L.DoString(`
+		local url = require("url")
+		local x = url.parse("http://www.jd.com:8080/测试/?a=1&a=2&b=3&c=%E6%B5%8B%E8%AF%95#xxx")
+		print(x.schema)
+		print(x.host)
+		print(x.port)
+		print(x.rawpath)
+		print(x.path)
+		print(x.rawquery)
+		for key, value in pairs(x.query) do
+		    print(key, table.concat(value,","))
+		end
+		print(x.fragment)
+	`); err != nil {
+		panic(err)
+	}
 }
 ```
-
-## API
-
-- [`url.parse(url)`](#urlparseurl)
-- [`url.build(options)`](#urlbuildoptions)
-- [`url.build_query_string(query_params)`](#urlbuild_query_stringquery_params)
-- [`url.resolve(from, to)`](#urlresolvefrom-to)
-
-### url.parse(url)
-
-Parse URL into a table of key/value components.
-
-**Attributes**
-
-| Name    | Type   | Description |
-| ------- | ------ | ----------- |
-| url     | String | URL to parsed |
-
-**Returns**
-
-Table with parsed URL or (nil, error message)
-
-| Name     | Type   | Description |
-| -------- | ------ | ----------- |
-| scheme   | String | Scheme of the URL |
-| username | String | Username |
-| password | String | Password |
-| host     | String | Host and port of the URL |
-| path     | String | Path |
-| query    | String | Query string |
-| fragment | String | Fragment |
-
-### url.build(options)
-
-Assemble a URL string from a table of URL components.
-
-**Attributes**
-
-| Name    | Type  | Description |
-| ------- | ----- | ----------- |
-| options | Table | Table with URL components, see [`url.parse`](#urlparseurl) for list of valid components |
-
-**Returns**
-
-String
-
-### url.build_query_string(query_params)
-
-Assemble table of query string parameters into a string.
-
-**Attributes**
-
-| Name         | Type  | Description |
-| ------------ | ----- | ----------- |
-| query_params | Table | Table with query parameters |
-
-**Returns**
-
-String
-
-### url.resolve(from, to)
-
-Take a base URL, and a href URL, and resolve them as a browser would for an anchor tag.
-
-| Name | Type   | Description |
-| ---- | ------ | ----------- |
-| from | String | base URL |
-| to | String | href URL |
-
-**Returns**
-
-String or (nil, error message)

@@ -1,11 +1,14 @@
 package gluaurl
 
-import "github.com/yuin/gopher-lua"
-import "net/url"
-import "strings"
-import "fmt"
-import "sort"
-import "regexp"
+import (
+	"fmt"
+	"net/url"
+	"regexp"
+	"sort"
+	"strings"
+
+	"github.com/yuin/gopher-lua"
+)
 
 var rBracket = regexp.MustCompile("\\[\\]$")
 
@@ -22,37 +25,46 @@ func Loader(L *lua.LState) int {
 
 func parse(L *lua.LState) int {
 	parsed := L.NewTable()
-
-	url, err := url.Parse(L.CheckString(1))
+	obj, err := url.Parse(L.CheckString(1))
 	if err != nil {
 		L.Push(lua.LNil)
-		L.Push(lua.LString(fmt.Sprintf("%s", err)))
+		L.Push(lua.LString(err.Error()))
 		return 2
 	}
 
-	parsed.RawSetString("scheme", lua.LString(url.Scheme))
+	parsed.RawSetString("scheme", lua.LString(obj.Scheme))
+	parsed.RawSetString("rawquery", lua.LString(obj.RawQuery))
+	parsed.RawSetString("path", lua.LString(obj.Path))
+	parsed.RawSetString("rawpath", lua.LString(obj.RawPath))
+	parsed.RawSetString("port", lua.LString(obj.Port()))
+	parsed.RawSetString("fragment", lua.LString(obj.Fragment))
+	parsed.RawSetString("scheme", lua.LString(obj.Scheme))
 
-	if url.User != nil {
-		parsed.RawSetString("username", lua.LString(url.User.Username()))
+	if len(obj.Query()) > 0 {
+		query := L.NewTable()
+		for k, vlist := range obj.Query() {
+			each := L.NewTable()
+			for i, v := range vlist {
+				each.Insert(i+1, lua.LString(v))
+			}
+			query.RawSetString(k, each)
+		}
+		parsed.RawSetString("query", query)
+	}
 
-		if password, hasPassword := url.User.Password(); hasPassword {
+	if obj.User != nil {
+		parsed.RawSetString("username", lua.LString(obj.User.Username()))
+		if password, hasPassword := obj.User.Password(); hasPassword {
 			parsed.RawSetString("password", lua.LString(password))
 		} else {
 			parsed.RawSetString("password", lua.LNil)
 		}
-
 	} else {
 		parsed.RawSetString("username", lua.LNil)
 		parsed.RawSetString("password", lua.LNil)
 	}
 
-	parsed.RawSetString("host", lua.LString(url.Host))
-	parsed.RawSetString("path", lua.LString(url.Path))
-	parsed.RawSetString("query", lua.LString(url.RawQuery))
-	parsed.RawSetString("fragment", lua.LString(url.Fragment))
-
 	L.Push(parsed)
-
 	return 1
 }
 
@@ -81,7 +93,7 @@ func build(L *lua.LState) int {
 		buildUrl.Path = path.String()
 	}
 
-	if query := options.RawGetString("query"); query != lua.LNil {
+	if query := options.RawGetString("rawquery"); query != lua.LNil {
 		buildUrl.RawQuery = query.String()
 	}
 
@@ -161,14 +173,14 @@ func resolve(L *lua.LState) int {
 	fromUrl, err := url.Parse(from)
 	if err != nil {
 		L.Push(lua.LNil)
-		L.Push(lua.LString(fmt.Sprintf("%s", err)))
+		L.Push(lua.LString(err.Error()))
 		return 2
 	}
 
 	toUrl, err := url.Parse(to)
 	if err != nil {
 		L.Push(lua.LNil)
-		L.Push(lua.LString(fmt.Sprintf("%s", err)))
+		L.Push(lua.LString(err.Error()))
 		return 2
 	}
 
