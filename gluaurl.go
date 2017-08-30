@@ -126,16 +126,10 @@ func toQueryString(prefix string, lv lua.LValue, ret *[]string) {
 	switch v := lv.(type) {
 	case lua.LBool:
 		*ret = append(*ret, url.QueryEscape(prefix)+"="+v.String())
-		break
-
 	case lua.LNumber:
 		*ret = append(*ret, url.QueryEscape(prefix)+"="+v.String())
-		break
-
 	case lua.LString:
 		*ret = append(*ret, url.QueryEscape(prefix)+"="+url.QueryEscape(v.String()))
-		break
-
 	case *lua.LTable:
 		maxn := v.MaxN()
 		if maxn == 0 {
@@ -162,7 +156,6 @@ func toQueryString(prefix string, lv lua.LValue, ret *[]string) {
 			}
 			*ret = append(*ret, strings.Join(ret2, "&"))
 		}
-		break
 	}
 }
 
