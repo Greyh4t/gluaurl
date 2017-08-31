@@ -32,7 +32,7 @@ func parse(L *lua.LState) int {
 		return 2
 	}
 
-	parsed.RawSetString("schema", lua.LString(obj.Schema))
+	parsed.RawSetString("scheme", lua.LString(obj.Scheme))
 	parsed.RawSetString("host", lua.LString(obj.Host))
 	parsed.RawSetString("port", lua.LString(obj.Port()))
 	parsed.RawSetString("path", lua.LString(obj.Path))
