@@ -32,14 +32,13 @@ func parse(L *lua.LState) int {
 		return 2
 	}
 
-	parsed.RawSetString("scheme", lua.LString(obj.Scheme))
-	parsed.RawSetString("rawquery", lua.LString(obj.RawQuery))
+	parsed.RawSetString("schema", lua.LString(obj.Schema))
+	parsed.RawSetString("host", lua.LString(obj.Host))
+	parsed.RawSetString("port", lua.LString(obj.Port()))
 	parsed.RawSetString("path", lua.LString(obj.Path))
 	parsed.RawSetString("rawpath", lua.LString(obj.RawPath))
-	parsed.RawSetString("port", lua.LString(obj.Port()))
+	parsed.RawSetString("rawquery", lua.LString(obj.RawQuery))
 	parsed.RawSetString("fragment", lua.LString(obj.Fragment))
-	parsed.RawSetString("scheme", lua.LString(obj.Scheme))
-
 	if len(obj.Query()) > 0 {
 		query := L.NewTable()
 		for k, vlist := range obj.Query() {
