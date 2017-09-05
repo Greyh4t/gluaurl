@@ -42,11 +42,15 @@ func parse(L *lua.LState) int {
 	if len(obj.Query()) > 0 {
 		query := L.NewTable()
 		for k, vlist := range obj.Query() {
-			each := L.NewTable()
-			for i, v := range vlist {
-				each.Insert(i+1, lua.LString(v))
+			if len(vlist) > 1 {
+				each := L.NewTable()
+				for i, v := range vlist {
+					each.Insert(i+1, lua.LString(v))
+				}
+				query.RawSetString(k, each)
+			} else {
+				query.RawSetString(k, lua.LString(vlist[0]))
 			}
-			query.RawSetString(k, each)
 		}
 		parsed.RawSetString("query", query)
 	}
