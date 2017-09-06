@@ -66,6 +66,11 @@ func main() {
 		print(url.build_query_string(options))
 
 		print(url.resolve("http://www.example.com","/index/test?a=1"))
+
+		print(url.type("http://www.jd.com"))
+		print(url.type("1a.jd.com"))
+		print(url.type("1.1.1.1"))
+		print(url.type("teststr"))
 	`); err != nil {
 		panic(err)
 	}
