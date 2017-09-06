@@ -31,6 +31,7 @@ func main() {
 		local x = url.parse("http://www.example.com:8080/测试/?a=1&a=2&b=6&e=&c%5B%5D=3&c%5B%5D=4&c%5B%5D=5&d=%E6%B5%8B%E8%AF%95#xxx")
 		print(x.scheme)
 		print(x.host)
+		print(x.hostname)
 		print(x.port)
 		print(x.rawpath)
 		print(x.path)
