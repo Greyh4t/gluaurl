@@ -71,6 +71,8 @@ func main() {
 		print(url.type("http://www.example.com"))
 		print(url.type("1a.example.com"))
 		print(url.type("1.1.1.1"))
+		print(url.type("123.123.123.123:22"))
+		print(url.type("www.example.com:443"))
 		print(url.type("teststr"))
 	`); err != nil {
 		panic(err)

@@ -15,6 +15,7 @@ var (
 	ipPattern     = regexp.MustCompile(`\A(?:[0-9]{1,3}\.){3}[0-9]{1,3}\z`)
 	domainPattern = regexp.MustCompile(`\A\w+(?:\.\w+)+\z`)
 	urlPattern    = regexp.MustCompile(`\Ahttps?://\S+\z`)
+	hostPattern   = regexp.MustCompile(`\A\w+(?:\.\w+)+(?::\d{1,5})\z`)
 )
 
 func Loader(L *lua.LState) int {
@@ -198,6 +199,8 @@ func _type(L *lua.LState) int {
 		L.Push(lua.LString("ip"))
 	} else if domainPattern.MatchString(in) {
 		L.Push(lua.LString("domain"))
+	} else if hostPattern.MatchString(in) {
+		L.Push(lua.LString("host"))
 	} else if urlPattern.MatchString(in) {
 		L.Push(lua.LString("url"))
 	} else {
