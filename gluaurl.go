@@ -10,7 +10,12 @@ import (
 	"github.com/yuin/gopher-lua"
 )
 
-var rBracket = regexp.MustCompile("\\[\\]$")
+var (
+	rBracket      = regexp.MustCompile("\\[\\]$")
+	ipPattern     = regexp.MustCompile(`\A(?:[0-9]{1,3}\.){3}[0-9]{1,3}\z`)
+	domainPattern = regexp.MustCompile(`\A\w+(?:\.\w+)+\z`)
+	urlPattern    = regexp.MustCompile(`\Ahttps?://\S+\z`)
+)
 
 func Loader(L *lua.LState) int {
 	mod := L.SetFuncs(L.NewTable(), map[string]lua.LGFunction{
@@ -18,6 +23,7 @@ func Loader(L *lua.LState) int {
 		"build":              build,
 		"build_query_string": buildQueryString,
 		"resolve":            resolve,
+		"type":               _type,
 	})
 	L.Push(mod)
 	return 1
@@ -182,5 +188,19 @@ func resolve(L *lua.LState) int {
 
 	resolvedUrl := fromUrl.ResolveReference(toUrl).String()
 	L.Push(lua.LString(resolvedUrl))
+	return 1
+}
+
+func _type(L *lua.LState) int {
+	in := L.CheckString(1)
+	if ipPattern.MatchString(in) {
+		L.Push(lua.LString("ip"))
+	} else if domainPattern.MatchString(in) {
+		L.Push(lua.LString("domain"))
+	} else if urlPattern.MatchString(in) {
+		L.Push(lua.LString("url"))
+	} else {
+		L.Push(lua.LString("unknown"))
+	}
 	return 1
 }
