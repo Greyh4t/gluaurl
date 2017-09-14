@@ -13,9 +13,9 @@ import (
 var (
 	rBracket      = regexp.MustCompile("\\[\\]$")
 	ipPattern     = regexp.MustCompile(`\A(?:[0-9]{1,3}\.){3}[0-9]{1,3}\z`)
-	domainPattern = regexp.MustCompile(`\A\w+(?:\.\w+)+\z`)
-	urlPattern    = regexp.MustCompile(`\Ahttps?://\S+\z`)
-	hostPattern   = regexp.MustCompile(`\A\w+(?:\.\w+)+(?::\d{1,5})\z`)
+	domainPattern = regexp.MustCompile(`\A[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)+\z`)
+	urlPattern    = regexp.MustCompile(`\Ahttps?://[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)+(?::\d{1,5})?\S*\z`)
+	hostPattern   = regexp.MustCompile(`\A[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)+(?::\d{1,5})\z`)
 )
 
 func Loader(L *lua.LState) int {
