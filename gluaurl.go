@@ -47,21 +47,20 @@ func parse(L *lua.LState) int {
 	parsed.RawSetString("rawpath", lua.LString(obj.RawPath))
 	parsed.RawSetString("rawquery", lua.LString(obj.RawQuery))
 	parsed.RawSetString("fragment", lua.LString(obj.Fragment))
-	if len(obj.Query()) > 0 {
-		query := L.NewTable()
-		for k, vlist := range obj.Query() {
-			if len(vlist) > 1 {
-				each := L.NewTable()
-				for i, v := range vlist {
-					each.Insert(i+1, lua.LString(v))
-				}
-				query.RawSetString(k, each)
-			} else {
-				query.RawSetString(k, lua.LString(vlist[0]))
+
+	query := L.NewTable()
+	for k, vlist := range obj.Query() {
+		if len(vlist) > 1 {
+			each := L.NewTable()
+			for i, v := range vlist {
+				each.Insert(i+1, lua.LString(v))
 			}
+			query.RawSetString(k, each)
+		} else {
+			query.RawSetString(k, lua.LString(vlist[0]))
 		}
-		parsed.RawSetString("query", query)
 	}
+	parsed.RawSetString("query", query)
 
 	if obj.User != nil {
 		parsed.RawSetString("username", lua.LString(obj.User.Username()))
