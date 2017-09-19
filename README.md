@@ -74,6 +74,8 @@ func main() {
 		print(url.type("123.123.123.123:22"))
 		print(url.type("www.example.com:443"))
 		print(url.type("teststr"))
+		print(url.urlencode('http://www.example.com/a=1&b=测试&c={"a":1,"b":"测试"}'))
+		print(url.urldecode("http%3A%2F%2Fwww.example.com%2Fa%3D1%26b%3D%E6%B5%8B%E8%AF%95%26c%3D%7B%22a%22%3A1%2C%22b%22%3A%22%E6%B5%8B%E8%AF%95%22%7D"))
 	`); err != nil {
 		panic(err)
 	}

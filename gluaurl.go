@@ -25,6 +25,8 @@ func Loader(L *lua.LState) int {
 		"build_query_string": buildQueryString,
 		"resolve":            resolve,
 		"type":               _type,
+		"urlencode":          urlEncode,
+		"urldecode":          urlDecode,
 	})
 	L.Push(mod)
 	return 1
@@ -205,5 +207,22 @@ func _type(L *lua.LState) int {
 	} else {
 		L.Push(lua.LString("unknown"))
 	}
+	return 1
+}
+
+func urlEncode(L *lua.LState) int {
+	in := L.CheckString(1)
+	L.Push(lua.LString(url.QueryEscape(in)))
+	return 1
+}
+
+func urlDecode(L *lua.LState) int {
+	in := L.CheckString(1)
+	r, err := url.QueryUnescape(in)
+	if err != nil {
+		L.Push(lua.LString(in))
+		return 1
+	}
+	L.Push(lua.LString(r))
 	return 1
 }
